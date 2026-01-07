@@ -2,6 +2,8 @@
 
 Konfiguracja serwera monitoringu wideo na Raspberry Pi 4 z użyciem Motion + Camera Module v3 (IMX708).
 
+> 📖 **Projekt oparty na instrukcji:** [How to Setup a Raspberry Pi Webcam Server](https://pimylifeup.com/raspberry-pi-webcam-server/) z PiMyLifeUp
+
 ## 📋 Spis treści
 
 - [Wymagania sprzętowe](#-wymagania-sprzętowe)
