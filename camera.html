@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Monitor - rpi4las</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            background: #1a1a1a; 
+            color: #fff; 
+            font-family: 'Courier New', monospace; 
+            margin: 0;
+            padding: 20px;
+        }
+        h2 { 
+            color: #4CAF50; 
+            margin-bottom: 20px;
+        }
+        .container { 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        .stream { 
+            border: 2px solid #333; 
+            max-width: 100%;
+            height: auto;
+            background: #000;
+        }
+        .stats { 
+            background: #222; 
+            padding: 20px; 
+            border-radius: 8px; 
+            min-width: 220px;
+            border: 1px solid #333;
+        }
+        .stats div { 
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .label { 
+            color: #888; 
+        }
+        .value {
+            font-weight: bold;
+        }
+        .online { color: #4CAF50; }
+        .offline { color: #f44336; }
+        .temp { color: #ff9800; }
+        .network { color: #2196F3; }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .stream {
+                width: 100%;
+            }
+            .stats {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>📷 rpi4las - Camera Monitor</h2>
+    <div class="container">
+        <img class="stream" src="http://10.0.1.26:8081" alt="Camera stream" onerror="this.style.display='none'">
+        <div class="stats">
+            <h3>📊 System Stats</h3>
+            <div>
+                <span class="label">Status:</span> 
+                <span class="value" id="status">Loading...</span>
+            </div>
+            <div>
+                <span class="label">🌡️ Temp:</span> 
+                <span class="value temp" id="temp">-</span>
+            </div>
+            <div>
+                <span class="label">⬇️ RX:</span> 
+                <span class="value network" id="rx">-</span>
+            </div>
+            <div>
+                <span class="label">⬆️ TX:</span> 
+                <span class="value network" id="tx">-</span>
+            </div>
+            <div>
+                <span class="label">🔌 Interface:</span> 
+                <span class="value" id="iface">-</span>
+            </div>
+            <hr style="border-color: #333; margin: 15px 0;">
+            <div>
+                <span class="label">Updated:</span> 
+                <span class="value" id="time">-</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const REFRESH_INTERVAL = 5000; // 5 seconds
+        
+        async function updateStats() {
+            try {
+                const res = await fetch('/stats.php');
+                if (!res.ok) throw new Error('HTTP error');
+                
+                const data = await res.json();
+                
+                document.getElementById('status').textContent = '🟢 Online';
+                document.getElementById('status').className = 'value online';
+                document.getElementById('temp').textContent = data.temp;
+                document.getElementById('rx').textContent = data.rx;
+                document.getElementById('tx').textContent = data.tx;
+                document.getElementById('iface').textContent = data.iface;
+                document.getElementById('time').textContent = new Date().toLocaleTimeString('pl-PL');
+                
+            } catch(e) {
+                document.getElementById('status').textContent = '🔴 Offline';
+                document.getElementById('status').className = 'value offline';
+                console.error('Stats fetch error:', e);
+            }
+        }
+        
+        // Initial load
+        updateStats();
+        
+        // Periodic refresh
+        setInterval(updateStats, REFRESH_INTERVAL);
+    </script>
+</body>
+</html>
