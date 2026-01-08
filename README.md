@@ -47,25 +47,54 @@ Konfiguracja serwera monitoringu wideo na Raspberry Pi 4 z użyciem Motion + Cam
 
 ## 📦 Instalacja
 
-### 1. Aktualizacja systemu
+### Szybka instalacja (zalecana)
+
+Jedna komenda pobierze wszystkie pliki i uruchomi instalator:
+
+```bash
+curl -sL https://raw.githubusercontent.com/auditlog/rpi-camera-monitoring/develop/download.sh | bash
+```
+
+lub z wget:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/auditlog/rpi-camera-monitoring/develop/download.sh | bash
+```
+
+Skrypt automatycznie:
+- Pobierze wszystkie pliki do `~/rpi-camera-monitoring`
+- Wykryje czy to nowa instalacja czy aktualizacja
+- Uruchomi odpowiedni skrypt (`install.sh` lub `update.sh`)
+
+### Aktualizacja istniejącej instalacji
+
+```bash
+cd ~/rpi-camera-monitoring && wget -qO- https://raw.githubusercontent.com/auditlog/rpi-camera-monitoring/develop/download.sh | bash
+```
+
+---
+
+### Instalacja manualna
+
+#### 1. Aktualizacja systemu
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-### 2. Instalacja Motion
+#### 2. Instalacja Motion
 
 ```bash
 sudo apt install motion -y
 ```
 
-### 3. Instalacja narzędzi pomocniczych
+#### 3. Instalacja narzędzi pomocniczych
 
 ```bash
 sudo apt install vnstat lighttpd php-cgi -y
 ```
 
-### 4. Konfiguracja lighttpd z PHP
+#### 4. Konfiguracja lighttpd z PHP
 
 ```bash
 sudo lighty-enable-mod fastcgi
@@ -73,7 +102,7 @@ sudo lighty-enable-mod fastcgi-php
 sudo systemctl restart lighttpd
 ```
 
-### 5. Włączenie serwisów
+#### 5. Włączenie serwisów
 
 ```bash
 sudo systemctl enable vnstat lighttpd motion
@@ -396,6 +425,12 @@ v4l2-ctl -d /dev/video0 --list-formats-ext
 - [Camera Module v3 Datasheet](https://www.raspberrypi.com/documentation/accessories/camera.html)
 
 ## 📝 Changelog
+
+- **2026-01-08** - Poprawki bezpieczeństwa i automatyzacja
+  - Dynamiczne wykrywanie IP w panelu webowym
+  - Sanityzacja danych wejściowych w stats.php
+  - HTTP Basic Auth dla lighttpd
+  - Skrypty: `install.sh`, `update.sh`, `download.sh`
 
 - **2026-01-07** - Pierwsza wersja dokumentacji
   - Konfiguracja Motion 4.7.1 na Debian Bookworm
