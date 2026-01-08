@@ -20,6 +20,12 @@ preg_match('/temp=([\d.]+)/', $temp, $m);
 // Active network interface
 $iface = trim(shell_exec("ip route | grep default | head -1 | awk '{print \$5}'"));
 
+// Sanitize interface name (only allow alphanumeric, underscore, hyphen)
+if (empty($iface) || !preg_match('/^[a-zA-Z0-9_-]+$/', $iface)) {
+    http_response_code(500);
+    die(json_encode(['error' => 'Invalid or missing network interface']));
+}
+
 // Real-time transfer measurement (0.5s sample)
 $rx1 = @file_get_contents("/sys/class/net/$iface/statistics/rx_bytes");
 $tx1 = @file_get_contents("/sys/class/net/$iface/statistics/tx_bytes");
